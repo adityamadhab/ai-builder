@@ -3,6 +3,7 @@ import { AIService } from '../services/ai.service';
 import { validateGenerateRequest } from '../utils/validation';
 import { logger } from '../utils/logger';
 import { CodeService } from '../services/code.service';
+import * as path from 'path';
 
 export class AIController {
   static async generateCode(req: Request, res: Response): Promise<void> {
@@ -13,23 +14,34 @@ export class AIController {
         return;
       }
 
-      const { prompt, userId } = req.body;
+      const { prompt } = req.body;
 
       // Generate code
       const rawCode = await AIService.generateCode(prompt);
       
-      // Process code
+      // Process code and create files
       const processedCode = await CodeService.processCode(rawCode);
       
-      // Save project
-      const project = await CodeService.saveProject(processedCode, userId);
-
+      // Get base directory path
+      const baseDir = path.join(process.cwd(), 'generated');
+      
       res.json({
         success: true,
-        projectId: project._id,
+        baseDirectory: baseDir,
+        structure: processedCode.structure,
         files: {
-          frontend: processedCode.frontend.length,
-          backend: processedCode.backend.length
+          frontend: processedCode.files.frontend.length,
+          backend: processedCode.files.backend.length
+        },
+        generatedFiles: {
+          frontend: processedCode.files.frontend.map(f => ({
+            path: path.join(baseDir, f.path),
+            relativePath: f.path
+          })),
+          backend: processedCode.files.backend.map(f => ({
+            path: path.join(baseDir, f.path),
+            relativePath: f.path
+          }))
         }
       });
 

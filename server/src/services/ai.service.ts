@@ -16,10 +16,13 @@ export class AIService {
     },
     modelName: "google/gemini-2.0-flash-thinking-exp-1219:free",
     openAIApiKey: process.env.OPENROUTER_API_KEY || '',
+    temperature: 0.7,
+    maxRetries: 3,
+    maxTokens: 4000
   };
 
   private static readonly models = {
-    architect: new ChatOpenAI({
+    master: new ChatOpenAI({
       ...AIService.baseConfig,
       modelName: "google/gemini-2.0-flash-thinking-exp-1219:free",
     }),
@@ -30,89 +33,72 @@ export class AIService {
     backend: new ChatOpenAI({
       ...AIService.baseConfig,
       modelName: "google/gemini-2.0-flash-thinking-exp-1219:free",
-    }),
-    reviewer: new ChatOpenAI({
-      ...AIService.baseConfig,
-      modelName: "google/gemini-2.0-flash-thinking-exp-1219:free",
     })
   };
 
   private static readonly prompts = {
-    architect: new PromptTemplate({
-      template: `You are the Software Architect. Your role is to:
-      1. Analyze the requirements: {prompt}
-      2. Plan the overall structure of the MERN stack application
-      3. Define the key components and their interactions
-      4. Delegate specific tasks to the frontend and backend teams
-      
-      Response must be valid JSON with this structure:
+    master: new PromptTemplate({
+      template: `Return ONLY a JSON object with file structure and tasks, no other text:
       {{
-        "plan": {{
-          "components": [],
-          "dataFlow": [],
-          "apis": []
+        "structure": {{
+          "frontend": ["src/components/", "src/styles/", "src/assets/"],
+          "backend": ["src/routes/", "src/controllers/", "src/models/"]
         }},
         "tasks": {{
-          "frontend": [],
-          "backend": []
+          "frontend": ["task1", "task2"],
+          "backend": ["task1", "task2"]
         }}
-      }}`,
+      }}
+
+      Requirements: {prompt}`,
       inputVariables: ["prompt"]
     }),
     frontend: new PromptTemplate({
-      template: `You are the Frontend Developer. Create React TypeScript components based on:
-      Requirements: {prompt}
-      Architecture Plan: {architectPlan}
-      
-      Response must be valid JSON array of files with this structure:
+      template: `Return ONLY a JSON array of files with code, no other text:
       {{
-        "frontend": [
+        "files": [
           {{
-            "path": "string",
-            "code": "string"
+            "path": "frontend/src/components/Header.tsx",
+            "content": "actual code content"
+          }},
+          {{
+            "path": "frontend/src/styles/header.css",
+            "content": "actual code content"
           }}
         ]
-      }}`,
-      inputVariables: ["prompt", "architectPlan"]
+      }}
+
+      Requirements: {prompt}
+      Tasks: {masterInstructions}`,
+      inputVariables: ["prompt", "masterInstructions"]
     }),
     backend: new PromptTemplate({
-      template: `You are the Backend Developer. Create Express TypeScript backend based on:
-      Requirements: {prompt}
-      Architecture Plan: {architectPlan}
-      
-      Response must be valid JSON array of files with this structure:
+      template: `Return ONLY a JSON array of files with code, no other text:
       {{
-        "backend": [
+        "files": [
           {{
-            "path": "string",
-            "code": "string"
+            "path": "backend/src/routes/index.ts",
+            "content": "actual code content"
+          }},
+          {{
+            "path": "backend/src/controllers/index.ts",
+            "content": "actual code content"
           }}
         ]
-      }}`,
-      inputVariables: ["prompt", "architectPlan"]
-    }),
-    reviewer: new PromptTemplate({
-      template: `You are the Code Reviewer. Review and optimize the generated code:
+      }}
+
       Requirements: {prompt}
-      Frontend Code: {frontendCode}
-      Backend Code: {backendCode}
-      
-      Response must be valid JSON with optimized code:
-      {{
-        "frontend": [{{ "path": "string", "code": "string" }}],
-        "backend": [{{ "path": "string", "code": "string" }}],
-        "adminPanel": [{{ "path": "string", "code": "string" }}]
-      }}`,
-      inputVariables: ["prompt", "frontendCode", "backendCode"]
+      Tasks: {masterInstructions}`,
+      inputVariables: ["prompt", "masterInstructions"]
     })
   };
 
   private static readonly outputParser = new StringOutputParser();
 
   private static readonly chains = {
-    architect: new LLMChain({
-      llm: AIService.models.architect,
-      prompt: AIService.prompts.architect,
+    master: new LLMChain({
+      llm: AIService.models.master,
+      prompt: AIService.prompts.master,
       outputParser: AIService.outputParser,
       verbose: true
     }),
@@ -127,35 +113,59 @@ export class AIService {
       prompt: AIService.prompts.backend,
       outputParser: AIService.outputParser,
       verbose: true
-    }),
-    reviewer: new LLMChain({
-      llm: AIService.models.reviewer,
-      prompt: AIService.prompts.reviewer,
-      outputParser: AIService.outputParser,
-      verbose: true
     })
   };
 
   private static cleanJsonString(str: string): string {
-    // Remove markdown code blocks if present
-    str = str.replace(/```(json|javascript|typescript)?\n/g, '');
-    str = str.replace(/```\n?/g, '');
-    
-    // Remove any leading/trailing whitespace
-    str = str.trim();
-    
-    // If the string starts with multiple newlines, remove them
-    str = str.replace(/^\n+/, '');
-    
-    // If there are any trailing newlines before a closing brace, remove them
-    str = str.replace(/\n+}/g, '}');
-    
-    return str;
+    if (!str) {
+      throw new Error('Empty response from LLM');
+    }
+
+    try {
+      // First try to parse as is (in case it's already clean JSON)
+      JSON.parse(str);
+      return str;
+    } catch {
+      // If that fails, try to extract JSON from the response
+      
+      // Try to find JSON between triple backticks
+      const jsonMatch = str.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+      if (jsonMatch) {
+        return jsonMatch[1].trim();
+      }
+
+      // Try to find JSON between single backticks
+      const singleTickMatch = str.match(/`\s*(\{[\s\S]*?\})\s*`/);
+      if (singleTickMatch) {
+        return singleTickMatch[1].trim();
+      }
+
+      // If no backticks, try to find the last occurrence of a JSON-like structure
+      const jsonStart = str.lastIndexOf('{');
+      const jsonEnd = str.lastIndexOf('}');
+      
+      if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+        return str.slice(jsonStart, jsonEnd + 1).trim();
+      }
+
+      throw new Error('No valid JSON found in response');
+    }
   }
 
   private static safeJsonParse(str: string): any {
     try {
-      return JSON.parse(str);
+      const parsed = JSON.parse(str);
+      
+      // Validate the expected structure
+      if (parsed.files && !Array.isArray(parsed.files)) {
+        throw new Error('Files must be an array');
+      }
+      
+      if (parsed.structure && typeof parsed.structure !== 'object') {
+        throw new Error('Structure must be an object');
+      }
+      
+      return parsed;
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error during JSON parsing';
       logger.error('JSON Parse Error:', {
@@ -170,50 +180,86 @@ export class AIService {
     try {
       const result = await chain.invoke(input);
       
-      if (typeof result === 'string') {
-        const cleanedContent = this.cleanJsonString(result);
-        return this.safeJsonParse(cleanedContent);
-      }
+      let content = '';
       
-      throw new Error('Unexpected response format from chain');
+      if (typeof result === 'string') {
+        content = result;
+      } else if (result && typeof result === 'object') {
+        if ('text' in result) {
+          content = result.text;
+        } else if ('response' in result) {
+          content = result.response;
+        } else if ('output' in result) {
+          content = result.output;
+        } else if ('generations' in result && Array.isArray(result.generations)) {
+          const generations = result.generations;
+          if (generations.length > 0) {
+            const firstGen = generations[0];
+            if (Array.isArray(firstGen) && firstGen.length > 0) {
+              const message = firstGen[0];
+              if (message && typeof message === 'object') {
+                if ('text' in message) {
+                  content = message.text;
+                } else if ('content' in message) {
+                  content = message.content;
+                } else if ('message' in message) {
+                  if (typeof message.message === 'string') {
+                    content = message.message;
+                  } else if (message.message && 'content' in message.message) {
+                    content = message.message.content;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      if (!content) {
+        logger.error('Empty or invalid response from chain:', { result });
+        throw new Error('Empty or invalid response from LLM chain');
+      }
+
+      const cleanedContent = this.cleanJsonString(content);
+      return this.safeJsonParse(cleanedContent);
+      
     } catch (error: any) {
       logger.error('Chain Response Error:', {
         input,
         error: error.message,
-        stack: error.stack
+        stack: error.stack,
+        result: error.result
       });
-      throw error;
+      throw new Error(`Failed to get response from AI: ${error.message}`);
     }
   }
 
   static async generateCode(prompt: string): Promise<GeneratedCode> {
     try {
-      // Step 1: Get architecture plan
-      logger.info('Getting architecture plan...');
-      const architectPlan = await this.getChainResponse(this.chains.architect, { prompt });
+      // Step 1: Get project structure and tasks
+      logger.info('Getting project structure...');
+      const masterPlan = await this.getChainResponse(this.chains.master, { prompt });
 
       // Step 2: Generate frontend and backend code in parallel
-      logger.info('Generating frontend and backend code...');
-      const [frontendCode, backendCode] = await Promise.all([
+      logger.info('Generating code...');
+      const [frontendFiles, backendFiles] = await Promise.all([
         this.getChainResponse(this.chains.frontend, { 
           prompt, 
-          architectPlan: JSON.stringify(architectPlan, null, 2) 
+          masterInstructions: masterPlan.tasks.frontend
         }),
         this.getChainResponse(this.chains.backend, { 
           prompt, 
-          architectPlan: JSON.stringify(architectPlan, null, 2) 
+          masterInstructions: masterPlan.tasks.backend
         })
       ]);
 
-      // Step 3: Review and optimize the code
-      logger.info('Reviewing and optimizing code...');
-      const finalCode = await this.getChainResponse(this.chains.reviewer, {
-        prompt,
-        frontendCode: JSON.stringify(frontendCode, null, 2),
-        backendCode: JSON.stringify(backendCode, null, 2)
-      });
-
-      return finalCode;
+      return {
+        structure: masterPlan.structure,
+        files: {
+          frontend: frontendFiles.files,
+          backend: backendFiles.files
+        }
+      };
 
     } catch (error: any) {
       logger.error('AI Service Error:', {
@@ -222,7 +268,7 @@ export class AIService {
         details: error.error || error
       });
       
-      throw new Error(error.message || 'Failed to generate code');
+      throw new Error(`Failed to generate code: ${error.message}`);
     }
   }
 }

@@ -3,16 +3,18 @@ import { GeneratedCode, CodeFile } from '../types/index';
 export class CodeParser {
   static sanitizeCode(rawCode: GeneratedCode): GeneratedCode {
     return {
-      frontend: this.processFiles(rawCode.frontend),
-      backend: this.processFiles(rawCode.backend),
-      adminPanel: this.processFiles(rawCode.adminPanel)
+      structure: rawCode.structure,
+      files: {
+        frontend: this.processFiles(rawCode.files.frontend),
+        backend: this.processFiles(rawCode.files.backend)
+      }
     };
   }
 
   private static processFiles(files: CodeFile[]): CodeFile[] {
     return files.map(file => ({
       path: this.sanitizePath(file.path),
-      code: this.cleanCode(file.code)
+      content: this.cleanCode(file.content)
     }));
   }
 

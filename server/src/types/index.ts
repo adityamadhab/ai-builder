@@ -11,13 +11,18 @@ declare global {
 
 export interface CodeFile {
   path: string;
-  code: string;
+  content: string;
 }
 
 export interface GeneratedCode {
-  frontend: CodeFile[];
-  backend: CodeFile[];
-  adminPanel: CodeFile[];
+  structure: {
+    frontend: string[];
+    backend: string[];
+  };
+  files: {
+    frontend: CodeFile[];
+    backend: CodeFile[];
+  };
 }
 
 export interface APIError {
