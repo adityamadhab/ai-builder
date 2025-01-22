@@ -254,3 +254,29 @@
 {"level":"info","message":"Generating code...","timestamp":"2025-01-22T19:04:48.728Z"}
 {"level":"info","message":"Successfully created all project files","timestamp":"2025-01-22T19:04:50.893Z"}
 {"level":"info","message":"POST /api/v1/generate - 200 - 3738ms","timestamp":"2025-01-22T19:04:50.898Z"}
+{"level":"info","message":"🚀 Server running on port 3000","timestamp":"2025-01-22T19:05:47.761Z"}
+{"level":"info","message":"POST /api/v1/generate","timestamp":"2025-01-22T19:05:59.631Z"}
+{"level":"info","message":"Getting project structure...","timestamp":"2025-01-22T19:05:59.634Z"}
+{"level":"info","message":"Generating code...","timestamp":"2025-01-22T19:06:01.101Z"}
+{"level":"info","message":"Successfully created all project files","timestamp":"2025-01-22T19:06:04.376Z"}
+{"level":"info","message":"POST /api/v1/generate - 200 - 4750ms","timestamp":"2025-01-22T19:06:04.381Z"}
+{"level":"info","message":"🚀 Server running on port 3000","timestamp":"2025-01-22T19:07:20.775Z"}
+{"level":"info","message":"POST /api/v1/generate","timestamp":"2025-01-22T19:07:41.143Z"}
+{"level":"info","message":"Getting project structure...","timestamp":"2025-01-22T19:07:41.148Z"}
+{"level":"info","message":"Generating code...","timestamp":"2025-01-22T19:07:42.204Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/components/Header.tsx","timestamp":"2025-01-22T19:07:45.551Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/components/Footer.tsx","timestamp":"2025-01-22T19:07:45.553Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/pages/Homepage.tsx","timestamp":"2025-01-22T19:07:45.554Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/styles/header.css","timestamp":"2025-01-22T19:07:45.555Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/styles/footer.css","timestamp":"2025-01-22T19:07:45.556Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/backend/src/routes/index.ts","timestamp":"2025-01-22T19:07:45.558Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/backend/src/controllers/index.ts","timestamp":"2025-01-22T19:07:45.560Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/backend/src/app.ts","timestamp":"2025-01-22T19:07:45.561Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/backend/src/db.ts","timestamp":"2025-01-22T19:07:45.561Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/components/Header.tsx","timestamp":"2025-01-22T19:07:45.562Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/components/Footer.tsx","timestamp":"2025-01-22T19:07:45.563Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/pages/Homepage.tsx","timestamp":"2025-01-22T19:07:45.563Z"}
+{"level":"info","message":"Successfully created all project files","timestamp":"2025-01-22T19:07:45.564Z"}
+{"level":"info","message":"POST /api/v1/generate - 200 - 4424ms","timestamp":"2025-01-22T19:07:45.567Z"}
+{"level":"info","message":"🚀 Server running on port 3000","timestamp":"2025-01-22T19:07:47.666Z"}
+{"level":"info","message":"🚀 Server running on port 3000","timestamp":"2025-01-22T19:08:27.148Z"}

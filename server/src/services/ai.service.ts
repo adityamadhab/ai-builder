@@ -242,7 +242,7 @@ export class AIService {
 
       // Step 2: Generate frontend and backend code in parallel
       logger.info('Generating code...');
-      const [frontendResponse, backendResponse] = await Promise.all([
+      const [frontendFiles, backendFiles] = await Promise.all([
         this.getChainResponse(this.chains.frontend, { 
           prompt, 
           masterInstructions: masterPlan.tasks.frontend
@@ -257,8 +257,8 @@ export class AIService {
       return {
         structure: masterPlan.structure,
         files: {
-          frontend: frontendResponse.files || [],
-          backend: backendResponse.files || []
+          frontend: frontendFiles || [],
+          backend: backendFiles || []
         }
       };
 
