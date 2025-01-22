@@ -8,13 +8,13 @@ import { logger } from '../utils/logger';
 export class AIService {
   private static readonly baseConfig = {
     configuration: {
-      baseURL: "https://openrouter.ai/api/v1",
+      baseURL: "https://api.groq.com/openai/v1",
       defaultHeaders: {
         "HTTP-Referer": process.env.APP_URL || "http://localhost:3000",
         "X-Title": "AI Code Builder"
       }
     },
-    modelName: "google/gemini-2.0-flash-thinking-exp-1219:free",
+    modelName: "llama-3.3-70b-versatile",
     openAIApiKey: process.env.OPENROUTER_API_KEY || '',
     temperature: 0.7,
     maxRetries: 3,
@@ -24,15 +24,15 @@ export class AIService {
   private static readonly models = {
     master: new ChatOpenAI({
       ...AIService.baseConfig,
-      modelName: "google/gemini-2.0-flash-thinking-exp-1219:free",
+      modelName: "llama-3.3-70b-versatile",
     }),
     frontend: new ChatOpenAI({
       ...AIService.baseConfig,
-      modelName: "google/gemini-2.0-flash-thinking-exp-1219:free",
+      modelName: "llama-3.3-70b-versatile",
     }),
     backend: new ChatOpenAI({
       ...AIService.baseConfig,
-      modelName: "google/gemini-2.0-flash-thinking-exp-1219:free",
+      modelName: "llama-3.3-70b-versatile",
     })
   };
 
@@ -242,7 +242,7 @@ export class AIService {
 
       // Step 2: Generate frontend and backend code in parallel
       logger.info('Generating code...');
-      const [frontendFiles, backendFiles] = await Promise.all([
+      const [frontendResponse, backendResponse] = await Promise.all([
         this.getChainResponse(this.chains.frontend, { 
           prompt, 
           masterInstructions: masterPlan.tasks.frontend
@@ -253,11 +253,12 @@ export class AIService {
         })
       ]);
 
+      // Step 3: Format the response according to GeneratedCode interface
       return {
         structure: masterPlan.structure,
         files: {
-          frontend: frontendFiles.files,
-          backend: backendFiles.files
+          frontend: frontendResponse.files || [],
+          backend: backendResponse.files || []
         }
       };
 
