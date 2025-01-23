@@ -42,17 +42,12 @@ export class AIService {
 
   private static readonly prompts = {
     master: new PromptTemplate({
-      template: `Return ONLY a JSON object with file structure and tasks, no other text:
+      template: `Return ONLY a JSON object with tasks, no other text. Use exactly these folder names: frontend, backend, admin. Follow modern industry standards:
       {{
-        "structure": {{
-          "frontend": ["src/components/", "src/styles/", "src/assets/"],
-          "backend": ["src/routes/", "src/controllers/", "src/models/"],
-          "admin": ["src/admin/components/", "src/admin/pages/", "src/admin/styles/"]
-        }},
         "tasks": {{
-          "frontend": ["task1", "task2"],
-          "backend": ["task1", "task2"],
-          "admin": ["task1", "task2"]
+          "frontend": ["setup_vite_react", "implement_features", "setup_routing", "implement_state_management", "add_api_integration"],
+          "backend": ["setup_express", "implement_api", "setup_database", "add_authentication", "add_validation"],
+          "admin": ["setup_vite_react", "implement_dashboard", "setup_routing", "add_data_management", "add_authentication"]
         }}
       }}
 
@@ -60,16 +55,25 @@ export class AIService {
       inputVariables: ["prompt"]
     }),
     frontend: new PromptTemplate({
-      template: `Return ONLY a JSON array of files with code, no other text:
+      template: `Return ONLY a JSON array of files with JavaScript/JSX code (not TypeScript), no other text. Use Vite + React with modern best practices:
+      - Use 'frontend' as root folder
+      - Include package.json with all dependencies
+      - Use React Router for routing
+      - Use modern hooks and patterns
+      - Include proper ESLint and Prettier config
+      - Use proper folder structure (components, pages, hooks, utils, etc.)
+      - Include proper .gitignore
+      - Include README.md with setup instructions
+      - IMPORTANT: All file content must be a string, even for JSON files like package.json (use JSON.stringify)
       {{
         "files": [
           {{
-            "path": "frontend/src/components/Header.tsx",
-            "content": "actual code content"
+            "path": "frontend/package.json",
+            "content": "{{\\"name\\":\\"frontend\\",\\"version\\":\\"1.0.0\\"}}"
           }},
           {{
-            "path": "frontend/src/styles/header.css",
-            "content": "actual code content"
+            "path": "frontend/vite.config.js",
+            "content": "import {{ defineConfig }} from 'vite';"
           }}
         ]
       }}
@@ -79,16 +83,30 @@ export class AIService {
       inputVariables: ["prompt", "masterInstructions"]
     }),
     backend: new PromptTemplate({
-      template: `Return ONLY a JSON array of files with code, no other text:
+      template: `Return ONLY a JSON array of files with JavaScript code (not TypeScript), no other text. Use modern Node.js best practices:
+      - Use 'backend' as root folder
+      - Include package.json with all dependencies
+      - Use Express with proper middleware setup
+      - Include proper error handling
+      - Use environment variables
+      - Include input validation
+      - Use proper security headers
+      - Include rate limiting
+      - Use proper logging
+      - Include proper ESLint and Prettier config
+      - Use proper folder structure (routes, controllers, models, middleware, etc.)
+      - Include proper .gitignore
+      - Include README.md with setup instructions
+      - IMPORTANT: All file content must be a string, even for JSON files like package.json (use JSON.stringify)
       {{
         "files": [
           {{
-            "path": "backend/src/routes/index.ts",
-            "content": "actual code content"
+            "path": "backend/package.json",
+            "content": "{{\\"name\\":\\"backend\\",\\"version\\":\\"1.0.0\\"}}"
           }},
           {{
-            "path": "backend/src/controllers/index.ts",
-            "content": "actual code content"
+            "path": "backend/src/app.js",
+            "content": "const express = require('express');"
           }}
         ]
       }}
@@ -98,16 +116,27 @@ export class AIService {
       inputVariables: ["prompt", "masterInstructions"]
     }),
     admin: new PromptTemplate({
-      template: `Return ONLY a JSON array of files with code, no other text:
+      template: `Return ONLY a JSON array of files with JavaScript/JSX code (not TypeScript), no other text. Use Vite + React with modern best practices:
+      - Use 'admin' as root folder
+      - Include package.json with all dependencies
+      - Use React Router for routing
+      - Use modern hooks and patterns
+      - Include proper ESLint and Prettier config
+      - Use proper folder structure (components, pages, hooks, utils, etc.)
+      - Include proper .gitignore
+      - Include README.md with setup instructions
+      - Include proper dashboard layout
+      - Include data tables and charts
+      - IMPORTANT: All file content must be a string, even for JSON files like package.json (use JSON.stringify)
       {{
         "files": [
           {{
-            "path": "admin/src/pages/Dashboard.tsx",
-            "content": "actual code content"
+            "path": "admin/package.json",
+            "content": "{{\\"name\\":\\"admin\\",\\"version\\":\\"1.0.0\\"}}"
           }},
           {{
-            "path": "admin/src/components/Sidebar.tsx",
-            "content": "actual code content"
+            "path": "admin/vite.config.js",
+            "content": "import {{ defineConfig }} from 'vite';"
           }}
         ]
       }}
@@ -157,31 +186,16 @@ export class AIService {
       JSON.parse(str);
       return str;
     } catch {
-      // If that fails, try to extract JSON from the response
+      // If that fails, try to extract and clean JSON from the response
       
-      // Try to find JSON between triple backticks
-      const jsonMatch = str.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-      if (jsonMatch) {
-        const extracted = jsonMatch[1].trim();
-        // Validate the extracted content is valid JSON
-        JSON.parse(extracted);
-        return extracted;
-      }
-
-      // Try to find JSON between single backticks
-      const singleTickMatch = str.match(/`\s*([\s\S]*?)\s*`/);
-      if (singleTickMatch) {
-        const extracted = singleTickMatch[1].trim();
-        // Validate the extracted content is valid JSON
-        JSON.parse(extracted);
-        return extracted;
-      }
-
-      // If no backticks, try to find the outermost JSON structure
-      const firstBrace = str.indexOf('{');
-      const lastBrace = str.lastIndexOf('}');
-      const firstBracket = str.indexOf('[');
-      const lastBracket = str.lastIndexOf(']');
+      // Remove markdown code blocks if present
+      let cleanedStr = str.replace(/```json\s*|\s*```/g, '');
+      
+      // Find the first { or [ and last } or ]
+      const firstBrace = cleanedStr.indexOf('{');
+      const lastBrace = cleanedStr.lastIndexOf('}');
+      const firstBracket = cleanedStr.indexOf('[');
+      const lastBracket = cleanedStr.lastIndexOf(']');
       
       let start = -1;
       let end = -1;
@@ -199,10 +213,19 @@ export class AIService {
       }
       
       if (start !== -1 && end !== -1) {
-        const extracted = str.slice(start, end).trim();
-        // Validate the extracted content is valid JSON
-        JSON.parse(extracted);
-        return extracted;
+        cleanedStr = cleanedStr.slice(start, end);
+        
+        // Clean control characters and normalize whitespace
+        cleanedStr = cleanedStr
+          .replace(/[\n\r\t]/g, '')  // Remove newlines, carriage returns, and tabs
+          .replace(/\s+/g, ' ')      // Normalize spaces
+          .replace(/"\s+(\{|\[)/g, '"$1')  // Remove spaces after quotes before objects/arrays
+          .replace(/(\}|\])\s+"/g, '$1"')  // Remove spaces before quotes after objects/arrays
+          .trim();
+        
+        // Validate the cleaned content is valid JSON
+        JSON.parse(cleanedStr);
+        return cleanedStr;
       }
 
       throw new Error('No valid JSON found in response');
@@ -214,13 +237,37 @@ export class AIService {
       const cleanedJson = this.cleanJsonString(str);
       const parsed = JSON.parse(cleanedJson);
       
-      // Validate the expected structure
-      if (parsed.files && !Array.isArray(parsed.files)) {
-        throw new Error('Files must be an array');
-      }
-      
-      if (parsed.structure && typeof parsed.structure !== 'object') {
-        throw new Error('Structure must be an object');
+      // Validate the expected structure - could be either tasks or files
+      if (parsed.tasks) {
+        // Validate tasks structure
+        if (typeof parsed.tasks !== 'object') {
+          throw new Error('Tasks must be an object');
+        }
+        if (!parsed.tasks.frontend || !Array.isArray(parsed.tasks.frontend)) {
+          throw new Error('Frontend tasks must be an array');
+        }
+        if (!parsed.tasks.backend || !Array.isArray(parsed.tasks.backend)) {
+          throw new Error('Backend tasks must be an array');
+        }
+        if (!parsed.tasks.admin || !Array.isArray(parsed.tasks.admin)) {
+          throw new Error('Admin tasks must be an array');
+        }
+      } else if (parsed.files) {
+        // Validate files structure
+        if (!Array.isArray(parsed.files)) {
+          throw new Error('Files must be an array');
+        }
+        // Validate each file has path and content
+        for (const file of parsed.files) {
+          if (!file.path || typeof file.path !== 'string') {
+            throw new Error('Each file must have a valid path string');
+          }
+          if (!file.content || typeof file.content !== 'string') {
+            throw new Error('Each file must have valid content string');
+          }
+        }
+      } else {
+        throw new Error('Response must contain either tasks or files');
       }
       
       return parsed;
@@ -294,13 +341,13 @@ export class AIService {
 
   static async generateCode(prompt: string): Promise<GeneratedCode> {
     try {
-      // Step 1: Get project structure and tasks
-      logger.info('Getting project structure...');
+      // Step 1: Get project tasks
+      logger.info('Getting project tasks...');
       const masterPlan = await this.getChainResponse(this.chains.master, { prompt });
 
       // Step 2: Generate frontend, backend, and admin code in parallel
       logger.info('Generating code...');
-      const [frontendFiles, backendFiles, adminFiles] = await Promise.all([
+      const [frontendResponse, backendResponse, adminResponse] = await Promise.all([
         this.getChainResponse(this.chains.frontend, { 
           prompt, 
           masterInstructions: masterPlan.tasks.frontend
@@ -316,14 +363,15 @@ export class AIService {
       ]);
 
       // Step 3: Format the response according to GeneratedCode interface
-      return {
-        structure: masterPlan.structure,
+      const generatedCode: GeneratedCode = {
         files: {
-          frontend: frontendFiles || [],
-          backend: backendFiles || [],
-          admin: adminFiles || []
+          frontend: Array.isArray(frontendResponse.files) ? frontendResponse.files : [],
+          backend: Array.isArray(backendResponse.files) ? backendResponse.files : [],
+          admin: Array.isArray(adminResponse.files) ? adminResponse.files : []
         }
       };
+
+      return generatedCode;
 
     } catch (error: any) {
       logger.error('AI Service Error:', {

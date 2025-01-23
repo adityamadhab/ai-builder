@@ -46,17 +46,7 @@ export class CodeService {
       const baseDir = path.join(process.cwd(), 'generated');
       await fs.mkdir(baseDir, { recursive: true });
 
-      // Create structure directories
-      for (const [section, dirs] of Object.entries(code.structure)) {
-        const sectionPath = path.join(baseDir, section);
-        await fs.mkdir(sectionPath, { recursive: true });
-
-        for (const dir of dirs) {
-          await fs.mkdir(path.join(sectionPath, dir), { recursive: true });
-        }
-      }
-
-      // Create files
+      // Create files and their parent directories
       for (const [section, files] of Object.entries(code.files)) {
         for (const file of files) {
           const filePath = path.join(baseDir, file.path);

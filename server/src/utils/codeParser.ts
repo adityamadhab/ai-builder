@@ -3,7 +3,6 @@ import { GeneratedCode, CodeFile } from '../types/index';
 export class CodeParser {
   static sanitizeCode(rawCode: GeneratedCode): GeneratedCode {
     return {
-      structure: rawCode.structure,
       files: {
         frontend: this.processFiles(rawCode.files.frontend),
         backend: this.processFiles(rawCode.files.backend),

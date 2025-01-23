@@ -28,7 +28,6 @@ export class AIController {
       res.json({
         success: true,
         baseDirectory: baseDir,
-        structure: processedCode.structure,
         files: {
           frontend: processedCode.files.frontend.length,
           backend: processedCode.files.backend.length,
