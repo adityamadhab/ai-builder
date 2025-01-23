@@ -31,7 +31,8 @@ export class AIController {
         structure: processedCode.structure,
         files: {
           frontend: processedCode.files.frontend.length,
-          backend: processedCode.files.backend.length
+          backend: processedCode.files.backend.length,
+          admin: processedCode.files.admin.length
         },
         generatedFiles: {
           frontend: processedCode.files.frontend.map(f => ({
@@ -39,6 +40,10 @@ export class AIController {
             relativePath: f.path
           })),
           backend: processedCode.files.backend.map(f => ({
+            path: path.join(baseDir, f.path),
+            relativePath: f.path
+          })),
+          admin: processedCode.files.admin.map(f => ({
             path: path.join(baseDir, f.path),
             relativePath: f.path
           }))

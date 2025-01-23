@@ -33,6 +33,10 @@ export class AIService {
     backend: new ChatOpenAI({
       ...AIService.baseConfig,
       modelName: "llama-3.3-70b-versatile",
+    }),
+    admin: new ChatOpenAI({
+      ...AIService.baseConfig,
+      modelName: "llama-3.3-70b-versatile",
     })
   };
 
@@ -42,11 +46,13 @@ export class AIService {
       {{
         "structure": {{
           "frontend": ["src/components/", "src/styles/", "src/assets/"],
-          "backend": ["src/routes/", "src/controllers/", "src/models/"]
+          "backend": ["src/routes/", "src/controllers/", "src/models/"],
+          "admin": ["src/admin/components/", "src/admin/pages/", "src/admin/styles/"]
         }},
         "tasks": {{
           "frontend": ["task1", "task2"],
-          "backend": ["task1", "task2"]
+          "backend": ["task1", "task2"],
+          "admin": ["task1", "task2"]
         }}
       }}
 
@@ -90,6 +96,25 @@ export class AIService {
       Requirements: {prompt}
       Tasks: {masterInstructions}`,
       inputVariables: ["prompt", "masterInstructions"]
+    }),
+    admin: new PromptTemplate({
+      template: `Return ONLY a JSON array of files with code, no other text:
+      {{
+        "files": [
+          {{
+            "path": "admin/src/pages/Dashboard.tsx",
+            "content": "actual code content"
+          }},
+          {{
+            "path": "admin/src/components/Sidebar.tsx",
+            "content": "actual code content"
+          }}
+        ]
+      }}
+
+      Requirements: {prompt}
+      Tasks: {masterInstructions}`,
+      inputVariables: ["prompt", "masterInstructions"]
     })
   };
 
@@ -113,6 +138,12 @@ export class AIService {
       prompt: AIService.prompts.backend,
       outputParser: AIService.outputParser,
       verbose: true
+    }),
+    admin: new LLMChain({
+      llm: AIService.models.admin,
+      prompt: AIService.prompts.admin,
+      outputParser: AIService.outputParser,
+      verbose: true
     })
   };
 
@@ -129,23 +160,49 @@ export class AIService {
       // If that fails, try to extract JSON from the response
       
       // Try to find JSON between triple backticks
-      const jsonMatch = str.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
+      const jsonMatch = str.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
       if (jsonMatch) {
-        return jsonMatch[1].trim();
+        const extracted = jsonMatch[1].trim();
+        // Validate the extracted content is valid JSON
+        JSON.parse(extracted);
+        return extracted;
       }
 
       // Try to find JSON between single backticks
-      const singleTickMatch = str.match(/`\s*(\{[\s\S]*?\})\s*`/);
+      const singleTickMatch = str.match(/`\s*([\s\S]*?)\s*`/);
       if (singleTickMatch) {
-        return singleTickMatch[1].trim();
+        const extracted = singleTickMatch[1].trim();
+        // Validate the extracted content is valid JSON
+        JSON.parse(extracted);
+        return extracted;
       }
 
-      // If no backticks, try to find the last occurrence of a JSON-like structure
-      const jsonStart = str.lastIndexOf('{');
-      const jsonEnd = str.lastIndexOf('}');
+      // If no backticks, try to find the outermost JSON structure
+      const firstBrace = str.indexOf('{');
+      const lastBrace = str.lastIndexOf('}');
+      const firstBracket = str.indexOf('[');
+      const lastBracket = str.lastIndexOf(']');
       
-      if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
-        return str.slice(jsonStart, jsonEnd + 1).trim();
+      let start = -1;
+      let end = -1;
+      
+      if (firstBrace !== -1 && lastBrace !== -1) {
+        start = firstBrace;
+        end = lastBrace + 1;
+      }
+      
+      if (firstBracket !== -1 && lastBracket !== -1) {
+        if (start === -1 || firstBracket < start) {
+          start = firstBracket;
+          end = lastBracket + 1;
+        }
+      }
+      
+      if (start !== -1 && end !== -1) {
+        const extracted = str.slice(start, end).trim();
+        // Validate the extracted content is valid JSON
+        JSON.parse(extracted);
+        return extracted;
       }
 
       throw new Error('No valid JSON found in response');
@@ -154,7 +211,8 @@ export class AIService {
 
   private static safeJsonParse(str: string): any {
     try {
-      const parsed = JSON.parse(str);
+      const cleanedJson = this.cleanJsonString(str);
+      const parsed = JSON.parse(cleanedJson);
       
       // Validate the expected structure
       if (parsed.files && !Array.isArray(parsed.files)) {
@@ -169,7 +227,7 @@ export class AIService {
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error during JSON parsing';
       logger.error('JSON Parse Error:', {
-        input: str,
+        input: str.substring(0, 1000), // Log only first 1000 chars to avoid huge logs
         error: errorMessage
       });
       throw new Error(`Invalid JSON response from AI: ${errorMessage}`);
@@ -240,9 +298,9 @@ export class AIService {
       logger.info('Getting project structure...');
       const masterPlan = await this.getChainResponse(this.chains.master, { prompt });
 
-      // Step 2: Generate frontend and backend code in parallel
+      // Step 2: Generate frontend, backend, and admin code in parallel
       logger.info('Generating code...');
-      const [frontendFiles, backendFiles] = await Promise.all([
+      const [frontendFiles, backendFiles, adminFiles] = await Promise.all([
         this.getChainResponse(this.chains.frontend, { 
           prompt, 
           masterInstructions: masterPlan.tasks.frontend
@@ -250,6 +308,10 @@ export class AIService {
         this.getChainResponse(this.chains.backend, { 
           prompt, 
           masterInstructions: masterPlan.tasks.backend
+        }),
+        this.getChainResponse(this.chains.admin, { 
+          prompt, 
+          masterInstructions: masterPlan.tasks.admin
         })
       ]);
 
@@ -258,7 +320,8 @@ export class AIService {
         structure: masterPlan.structure,
         files: {
           frontend: frontendFiles || [],
-          backend: backendFiles || []
+          backend: backendFiles || [],
+          admin: adminFiles || []
         }
       };
 

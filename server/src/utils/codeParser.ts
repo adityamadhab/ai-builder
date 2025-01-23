@@ -6,7 +6,8 @@ export class CodeParser {
       structure: rawCode.structure,
       files: {
         frontend: this.processFiles(rawCode.files.frontend),
-        backend: this.processFiles(rawCode.files.backend)
+        backend: this.processFiles(rawCode.files.backend),
+        admin: this.processFiles(rawCode.files.admin)
       }
     };
   }

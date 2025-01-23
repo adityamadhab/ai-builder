@@ -280,3 +280,64 @@
 {"level":"info","message":"POST /api/v1/generate - 200 - 4424ms","timestamp":"2025-01-22T19:07:45.567Z"}
 {"level":"info","message":"🚀 Server running on port 3000","timestamp":"2025-01-22T19:07:47.666Z"}
 {"level":"info","message":"🚀 Server running on port 3000","timestamp":"2025-01-22T19:08:27.148Z"}
+{"level":"info","message":"🚀 Server running on port 3000","timestamp":"2025-01-22T19:08:36.778Z"}
+{"level":"info","message":"POST /api/v1/generate","timestamp":"2025-01-22T19:10:14.532Z"}
+{"level":"info","message":"Getting project structure...","timestamp":"2025-01-22T19:10:14.538Z"}
+{"level":"info","message":"Generating code...","timestamp":"2025-01-22T19:10:15.663Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/components/Header.tsx","timestamp":"2025-01-22T19:10:19.045Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/styles/header.css","timestamp":"2025-01-22T19:10:19.046Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/index.html","timestamp":"2025-01-22T19:10:19.048Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/backend/src/routes/index.ts","timestamp":"2025-01-22T19:10:19.048Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/backend/src/controllers/index.ts","timestamp":"2025-01-22T19:10:19.049Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/components/Header.tsx","timestamp":"2025-01-22T19:10:19.050Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/components/Footer.tsx","timestamp":"2025-01-22T19:10:19.051Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/pages/Homepage.tsx","timestamp":"2025-01-22T19:10:19.052Z"}
+{"level":"info","message":"Successfully created all project files","timestamp":"2025-01-22T19:10:19.052Z"}
+{"level":"info","message":"POST /api/v1/generate - 200 - 4523ms","timestamp":"2025-01-22T19:10:19.055Z"}
+{"level":"info","message":"🚀 Server running on port 3000","timestamp":"2025-01-22T19:10:21.718Z"}
+{"level":"info","message":"🚀 Server running on port 3000","timestamp":"2025-01-22T19:10:55.848Z"}
+{"level":"info","message":"🔴 Server stopped","timestamp":"2025-01-22T19:16:47.123Z"}
+{"level":"info","message":"🚀 Server running on port 3000","timestamp":"2025-01-23T05:48:14.849Z"}
+{"level":"info","message":"POST /api/v1/generate","timestamp":"2025-01-23T05:48:19.791Z"}
+{"level":"info","message":"Getting project structure...","timestamp":"2025-01-23T05:48:19.792Z"}
+{"level":"info","message":"Generating code...","timestamp":"2025-01-23T05:48:21.917Z"}
+{"error":"Expected property name or '}' in JSON at position 1 (line 1 column 2)","input":"{(event: any) => setTotal(event.target.value)} />\n            <br />\n            <button type='submit'>Place Order</button>\n          </form>\n        );\n      };\n\n      export default OrderForm;\n    \"\n  }","level":"error","message":"JSON Parse Error:","timestamp":"2025-01-23T05:48:30.608Z"}
+{"error":"Invalid JSON response from AI: Expected property name or '}' in JSON at position 1 (line 1 column 2)","input":{"masterInstructions":["Implement user authentication and authorization","Create API endpoints for product CRUD operations","Implement order management system","Integrate payment gateway","Implement email notification system"],"prompt":"Create a complete e-commerce website for selling tech products"},"level":"error","message":"Chain Response Error:","stack":"Error: Invalid JSON response from AI: Expected property name or '}' in JSON at position 1 (line 1 column 2)\n    at Function.safeJsonParse (/Users/adityamadhabborah/Projects/ai-code-builder/server/src/services/ai.service.ts:206:13)\n    at Function.<anonymous> (/Users/adityamadhabborah/Projects/ai-code-builder/server/src/services/ai.service.ts:255:19)\n    at Generator.next (<anonymous>)\n    at fulfilled (/Users/adityamadhabborah/Projects/ai-code-builder/server/src/services/ai.service.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2025-01-23T05:48:30.613Z"}
+{"details":{},"level":"error","message":"AI Service Error: Failed to get response from AI: Invalid JSON response from AI: Expected property name or '}' in JSON at position 1 (line 1 column 2)","stack":"Error: Failed to get response from AI: Invalid JSON response from AI: Expected property name or '}' in JSON at position 1 (line 1 column 2)\n    at Function.<anonymous> (/Users/adityamadhabborah/Projects/ai-code-builder/server/src/services/ai.service.ts:264:13)\n    at Generator.next (<anonymous>)\n    at fulfilled (/Users/adityamadhabborah/Projects/ai-code-builder/server/src/services/ai.service.ts:5:58)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2025-01-23T05:48:30.620Z"}
+{"level":"error","message":"Generation error: Failed to generate code: Failed to get response from AI: Invalid JSON response from AI: Expected property name or '}' in JSON at position 1 (line 1 column 2)","stack":"Error: Failed to generate code: Failed to get response from AI: Invalid JSON response from AI: Expected property name or '}' in JSON at position 1 (line 1 column 2)\n    at Function.<anonymous> (/Users/adityamadhabborah/Projects/ai-code-builder/server/src/services/ai.service.ts:308:13)\n    at Generator.throw (<anonymous>)\n    at rejected (/Users/adityamadhabborah/Projects/ai-code-builder/server/src/services/ai.service.ts:6:65)\n    at processTicksAndRejections (node:internal/process/task_queues:105:5)","timestamp":"2025-01-23T05:48:30.631Z"}
+{"level":"info","message":"POST /api/v1/generate - 500 - 10866ms","timestamp":"2025-01-23T05:48:30.656Z"}
+{"level":"info","message":"🚀 Server running on port 3000","timestamp":"2025-01-23T05:49:53.915Z"}
+{"level":"info","message":"🔴 Server stopped","timestamp":"2025-01-23T05:50:11.633Z"}
+{"level":"info","message":"🚀 Server running on port 3000","timestamp":"2025-01-23T05:50:19.961Z"}
+{"level":"info","message":"🚀 Server running on port 3000","timestamp":"2025-01-23T05:50:25.743Z"}
+{"level":"info","message":"POST /api/v1/generate","timestamp":"2025-01-23T05:50:26.613Z"}
+{"level":"info","message":"Getting project structure...","timestamp":"2025-01-23T05:50:26.616Z"}
+{"level":"info","message":"Generating code...","timestamp":"2025-01-23T05:50:28.619Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/components/Header.tsx","timestamp":"2025-01-23T05:50:38.766Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/styles/header.css","timestamp":"2025-01-23T05:50:38.768Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/components/ProductListing.tsx","timestamp":"2025-01-23T05:50:38.769Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/components/Cart.tsx","timestamp":"2025-01-23T05:50:38.770Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/components/Payment.tsx","timestamp":"2025-01-23T05:50:38.771Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/frontend/src/components/UserAccount.tsx","timestamp":"2025-01-23T05:50:38.773Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/backend/src/server.ts","timestamp":"2025-01-23T05:50:38.774Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/backend/src/routes/index.ts","timestamp":"2025-01-23T05:50:38.774Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/backend/src/controllers/index.ts","timestamp":"2025-01-23T05:50:38.775Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/backend/src/models/Product.ts","timestamp":"2025-01-23T05:50:38.776Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/backend/src/models/User.ts","timestamp":"2025-01-23T05:50:38.777Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/backend/src/models/Order.ts","timestamp":"2025-01-23T05:50:38.778Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/backend/src/middleware/auth.ts","timestamp":"2025-01-23T05:50:38.779Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/backend/src/payment.gateway.ts","timestamp":"2025-01-23T05:50:38.780Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/backend/src/orders/orders.controller.ts","timestamp":"2025-01-23T05:50:38.780Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/backend/src/orders/orders.service.ts","timestamp":"2025-01-23T05:50:38.781Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/admin/src/pages/Dashboard.tsx","timestamp":"2025-01-23T05:50:38.782Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/admin/src/components/Sidebar.tsx","timestamp":"2025-01-23T05:50:38.783Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/admin/src/components/Header.tsx","timestamp":"2025-01-23T05:50:38.783Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/admin/src/pages/ProductManagement.tsx","timestamp":"2025-01-23T05:50:38.784Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/admin/src/pages/UserManagement.tsx","timestamp":"2025-01-23T05:50:38.786Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/admin/src/pages/OrderManagement.tsx","timestamp":"2025-01-23T05:50:38.788Z"}
+{"level":"info","message":"Created file: /Users/adityamadhabborah/Projects/ai-code-builder/server/generated/admin/src/pages/ReportingAndAnalytics.tsx","timestamp":"2025-01-23T05:50:38.789Z"}
+{"level":"info","message":"Successfully created all project files","timestamp":"2025-01-23T05:50:38.789Z"}
+{"level":"info","message":"POST /api/v1/generate - 200 - 12180ms","timestamp":"2025-01-23T05:50:38.792Z"}
+{"level":"info","message":"🚀 Server running on port 3000","timestamp":"2025-01-23T05:50:40.971Z"}
+{"level":"info","message":"🚀 Server running on port 3000","timestamp":"2025-01-23T05:51:59.928Z"}
+{"level":"info","message":"🔴 Server stopped","timestamp":"2025-01-23T05:52:00.451Z"}

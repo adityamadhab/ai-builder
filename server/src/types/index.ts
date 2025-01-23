@@ -18,10 +18,12 @@ export interface GeneratedCode {
   structure: {
     frontend: string[];
     backend: string[];
+    admin: string[];
   };
   files: {
     frontend: CodeFile[];
     backend: CodeFile[];
+    admin: CodeFile[];
   };
 }
 
